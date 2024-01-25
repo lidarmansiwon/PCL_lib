@@ -3,7 +3,6 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/conversions.h>
 #include <pcl/filters/voxel_grid.h>
 
 
@@ -19,10 +18,12 @@ void lidar_callback(const sensor_msgs::PointCloud2ConstPtr&input)
 
     pcl::fromROSMsg(*input, *cloud);
 
-    pcl::VoxelGrid<pcl::PointXYZI> voxel_filter;
-    voxel_filter.setInputCloud(cloud);
-    voxel_filter.setLeafSize(0.10f, 0.10f, 0.10f);
-    voxel_filter.filter(*cloud_filtered);
+
+    // make object
+    pcl::VoxelGrid<pcl::PointXYZI> voxel_filter; 
+    voxel_filter.setInputCloud(cloud);              // 입력
+    voxel_filter.setLeafSize(0.10f, 0.10f, 0.10f);  // leaf size 10cm
+    voxel_filter.filter(*cloud_filtered);           // 출력
 
     //Publish the Data
 

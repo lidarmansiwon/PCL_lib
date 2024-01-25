@@ -208,3 +208,6 @@ include_directories(
 # catkin_add_nosetests(test)
 add_executable(voxel src/voxel.cpp)
 target_link_libraries(voxel ${catkin_LIBRARIES})
+
+add_executable(PassThrough src/PassThrough.cpp)
+target_link_libraries(PassThrough ${catkin_LIBRARIES})
