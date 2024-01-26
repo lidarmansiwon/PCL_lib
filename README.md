@@ -16,7 +16,7 @@ https://limhyungtae.github.io/2021-09-09-ROS-Point-Cloud-Library-(PCL)-1.-Ptr,-C
 2. Crop Box
 3. Statistics-based noise remover(통계 기반 잡음 제거)
 
-3.1 Parameter
+# 3.1 Parameter
 ## Use it after modifying the launch file
 
 crop_box          --> **crop 크기**
