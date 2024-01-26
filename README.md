@@ -17,6 +17,7 @@ https://limhyungtae.github.io/2021-09-09-ROS-Point-Cloud-Library-(PCL)-1.-Ptr,-C
 3. Statistics-based noise remover(통계 기반 잡음 제거)
 
 3.1 Parameter
+
 setInputCloud --> 입력 포인트 클라우드
 
 setMean       --> **분석시 고려할 이웃 점의 수**
