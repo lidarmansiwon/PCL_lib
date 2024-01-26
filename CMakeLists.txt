@@ -23,12 +23,16 @@ find_package(pcl_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
-add_executable(voxel src/voxel.cpp)
-ament_target_dependencies(voxel rclcpp sensor_msgs pcl_conversions pcl_ros)
+add_executable(VoxelGridAndOutlierRemoval src/pcl_filter.cpp)
+ament_target_dependencies(VoxelGridAndOutlierRemoval rclcpp sensor_msgs pcl_conversions pcl_ros)
 
 install(TARGETS
-  voxel
+  VoxelGridAndOutlierRemoval
   DESTINATION lib/${PROJECT_NAME})
+
+install(
+    DIRECTORY launch
+    DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
