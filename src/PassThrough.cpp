@@ -25,13 +25,13 @@ void lidar_callback(const sensor_msgs::PointCloud2ConstPtr&input)
     cut_points.setFilterFieldName ("z");             //적용할 좌표 축 (eg. Z축)
     cut_points.setFilterLimits (-1.0, 1.5);          //적용할 값 (최소, 최대 값)
     cut_points.setFilterFieldName ("x");             //적용할 좌표 축 (eg. Z축)
-    cut_points.setFilterLimits (-1.0, 10.0);          //적용할 값 (최소, 최대 값)
+    cut_points.setFilterLimits (-10.0, 20.0);          //적용할 값 (최소, 최대 값)
     cut_points.setFilterFieldName ("y");             //적용할 좌표 축 (eg. Z축)
     cut_points.setFilterLimits (-5.0, 5.0);          //적용할 값 (최소, 최대 값)
     //cut_points.setFilterLimitsNegative (true);     //적용할 값 외 
     cut_points.filter (*cloud_filtered);             //필터 적용 
-    //Publish the Data
 
+    //Publish the Data
     sensor_msgs::PointCloud2 output;
     pcl::toROSMsg(*cloud_filtered, output);
     pub.publish(output);

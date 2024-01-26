@@ -211,3 +211,6 @@ target_link_libraries(voxel ${catkin_LIBRARIES})
 
 add_executable(PassThrough src/PassThrough.cpp)
 target_link_libraries(PassThrough ${catkin_LIBRARIES})
+
+add_executable(noise_remover src/noise_remover.cpp)
+target_link_libraries(noise_remover ${catkin_LIBRARIES})
