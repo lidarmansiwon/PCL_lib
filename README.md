@@ -2,7 +2,7 @@
 
 Tool of ros2 versions for pcl voxels, noise cancellation, and cutting removal libraries
 
-Environment  --> Ros1 noetic, Ros2 foxy(if you want to use foxy, Use foxy branch)
+Environment  --> **Ros1 noetic**, **Ros2 foxy**(if you want to use foxy, Use foxy branch)
 
 **Study with reference to the link below**
 
@@ -13,14 +13,19 @@ https://limhyungtae.github.io/2021-09-09-ROS-Point-Cloud-Library-(PCL)-1.-Ptr,-C
 # Tools currently available
 
 1. Voxelization
-2. PassThrough
+2. Crop Box
 3. Statistics-based noise remover(통계 기반 잡음 제거)
 
 3.1 Parameter
+## Use it after modifying the launch file
 
-setInputCloud --> 입력 포인트 클라우드
+crop_box          --> **crop 크기**
 
-setMean       --> **분석시 고려할 이웃 점의 수**
+voxel_resolution  --> **voxelization 해상도(voxel 크기)**
+
+setInputCloud     --> **입력 포인트 클라우드**
+
+setMean           --> **분석시 고려할 이웃 점의 수**
 
 setStddevMulThresh --> **Outlier로 처리할 거리 정보, 표준편차에 기반한 임계치 값으로 값이 작을수록 aggressive 하게 적용**
 
