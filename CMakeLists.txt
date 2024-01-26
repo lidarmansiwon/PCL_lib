@@ -23,14 +23,10 @@ find_package(pcl_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
-add_executable(talker src/simple_opp.cpp)
-ament_target_dependencies(talker rclcpp std_msgs)
-
 add_executable(voxel src/voxel.cpp)
 ament_target_dependencies(voxel rclcpp sensor_msgs pcl_conversions pcl_ros)
 
 install(TARGETS
-  talker
   voxel
   DESTINATION lib/${PROJECT_NAME})
 
