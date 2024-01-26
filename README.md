@@ -30,3 +30,4 @@ setMean           --> **분석시 고려할 이웃 점의 수**
 setStddevMulThresh --> **Outlier로 처리할 거리 정보, 표준편차에 기반한 임계치 값으로 값이 작을수록 aggressive 하게 적용**
 
 ![Untitled (2)](https://github.com/lidarmansiwon/pcl_cpp/assets/117976120/fe1028a6-c231-4adc-b59a-a39e9dd667ca)
+![Untitled (5)](https://github.com/lidarmansiwon/pcl_cpp/assets/117976120/d1dbc5b0-0f93-4513-add0-5648e46e27ba)
