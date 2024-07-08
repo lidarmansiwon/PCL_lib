@@ -22,7 +22,7 @@ public:
         auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).reliable(); // 센서 데이터에 대한 신뢰할 수 있는 QoS 설정
 
         subscription_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-            "/agent2/points", qos, std::bind(&VoxelGridAndOutlierRemovalNode::lidar_callback, this, std::placeholders::_1));
+            "/ouster/points", rclcpp::SensorDataQoS(), std::bind(&VoxelGridAndOutlierRemovalNode::lidar_callback, this, std::placeholders::_1));
 
         pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/filtered_points", 100);
         pub_downsampled_ = create_publisher<sensor_msgs::msg::PointCloud2>("/voxelized_points", 100);
@@ -113,7 +113,7 @@ private:
         pcl::toROSMsg(*cloud_downsampled, downsampled);
         pub_downsampled_->publish(downsampled);
 
-        RCLCPP_INFO(this->get_logger(), "Cloud before filtering: %lu points", cloud_downsampled->size());
+        // RCLCPP_INFO(this->get_logger(), "Cloud before filtering: %lu points", cloud_downsampled->size());
 
         // StatisticalOutlierRemoval filtering
         pcl::StatisticalOutlierRemoval<pcl::PointXYZI> sor_filter;
@@ -127,7 +127,7 @@ private:
         pcl::toROSMsg(*cloud_filtered, output);
         pub_->publish(output);
 
-        RCLCPP_INFO(this->get_logger(), "Cloud after filtering: %lu points", cloud_filtered->size());
+        // RCLCPP_INFO(this->get_logger(), "Cloud after filtering: %lu points", cloud_filtered->size());
     }
 
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr subscription_;
