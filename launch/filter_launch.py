@@ -32,8 +32,8 @@ def generate_launch_description():
                 
             # ]
             parameters=[
-                {"crop_box_x_min": -50.5},
-                {"crop_box_x_max": 0.0},
+                {"crop_box_x_min": 0.5},
+                {"crop_box_x_max": 50.0},
                 {"crop_box_y_min": -50.0},
                 {"crop_box_y_max": 50.0},
                 {"crop_box_z_min": -5.0},
@@ -41,6 +41,11 @@ def generate_launch_description():
                 {"voxel_resolution": 0.1},
                 {"setMean": 10.0},
                 {"setStddevMulThresh": 0.5},
+                # {"rotation_angle_degrees": 180.0},
+                {"rotation_quaternion_x": 0.0},
+                {"rotation_quaternion_y": 1.0},
+                {"rotation_quaternion_z": 0.0},
+                {"rotation_quaternion_w": 0.0},
                 
                 
             ]

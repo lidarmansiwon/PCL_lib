@@ -24,8 +24,9 @@ public:
         subscription_ = create_subscription<sensor_msgs::msg::PointCloud2>(
             "/ouster/points", rclcpp::SensorDataQoS(), std::bind(&VoxelGridAndOutlierRemovalNode::lidar_callback, this, std::placeholders::_1));
 
-        pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/filtered_points", 100);
-        pub_downsampled_ = create_publisher<sensor_msgs::msg::PointCloud2>("/voxelized_points", 100);
+        pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("/tcvf_points", 100);
+        pub_downsampled_ = create_publisher<sensor_msgs::msg::PointCloud2>("/tcv_points", 100);
+        pub_transformed_ = create_publisher<sensor_msgs::msg::PointCloud2>("/t_points",100);
     }
 
 private:
@@ -39,6 +40,12 @@ private:
     double voxel_resolution_;
     double setMean_;
     double setStddevMulThresh_;
+    // double rotation_angle_degrees_;
+    // double rotation_angle_radians_;
+    double rotation_quaternion_x_;
+    double rotation_quaternion_y_;
+    double rotation_quaternion_z_;
+    double rotation_quaternion_w_;
     
 
     void declare_parameters()
@@ -53,6 +60,11 @@ private:
         declare_parameter<double>("voxel_resolution", 0.5);
         declare_parameter<double>("setMean", 10.0);
         declare_parameter<double>("setStddevMulThresh", 1.0);
+        // declare_parameter<double>("rotation_angle_degrees", 45.0);  // 회전 각도 (도 단위)
+        declare_parameter<double>("rotation_quaternion_x", 0.0);
+        declare_parameter<double>("rotation_quaternion_y", 0.0);
+        declare_parameter<double>("rotation_quaternion_z", 0.0);
+        declare_parameter<double>("rotation_quaternion_w", 1.0);
     }
 
     void get_parameters()
@@ -67,6 +79,14 @@ private:
         get_parameter("voxel_resolution", voxel_resolution_);
         get_parameter("setMean", setMean_);
         get_parameter("setStddevMulThresh", setStddevMulThresh_);
+        // get_parameter("rotation_angle_degrees", rotation_angle_degrees_);
+        get_parameter("rotation_quaternion_x", rotation_quaternion_x_);
+        get_parameter("rotation_quaternion_y", rotation_quaternion_y_);
+        get_parameter("rotation_quaternion_z", rotation_quaternion_z_);
+        get_parameter("rotation_quaternion_w", rotation_quaternion_w_);
+
+        // 도 단위를 라디안 단위로 변환
+        // rotation_angle_radians_ = rotation_angle_degrees_ * M_PI / 180.0;    
     }
 
     pcl::PointCloud<pcl::PointXYZI>::Ptr applyCropBoxFilter(const pcl::PointCloud<pcl::PointXYZI>::Ptr& input_cloud)
@@ -89,6 +109,30 @@ private:
     return cloud;
     }
 
+    // pcl::PointCloud<pcl::PointXYZI>::Ptr applyRotation(const pcl::PointCloud<pcl::PointXYZI>::Ptr& input_cloud)
+    // {
+    //     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+        
+    //     transform.rotate(Eigen::AngleAxisf(rotation_angle_radians_, Eigen::Vector3f::UnitY()));
+        
+    //     pcl::PointCloud<pcl::PointXYZI>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    //     pcl::transformPointCloud(*input_cloud, *transformed_cloud,transform);
+    //     return transformed_cloud;
+    // }
+    pcl::PointCloud<pcl::PointXYZI>::Ptr applyRotation(const pcl::PointCloud<pcl::PointXYZI>::Ptr& input_cloud)
+    {
+        Eigen::Quaternionf q(rotation_quaternion_w_, rotation_quaternion_x_, rotation_quaternion_y_, rotation_quaternion_z_);
+
+        // 변환 행렬 생성
+        Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+        transform.rotate(q);
+
+        pcl::PointCloud<pcl::PointXYZI>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+        pcl::transformPointCloud(*input_cloud, *transformed_cloud, transform);
+
+        return transformed_cloud;
+    }
+
     void lidar_callback(const sensor_msgs::msg::PointCloud2::SharedPtr input)
     {
         // pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
@@ -99,9 +143,15 @@ private:
 
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloud = convertPointCloud2ToPCL(input);
 
-        // CropBox filter
-        pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_cropped = applyCropBoxFilter(cloud);
+        // Apply rotation transformation
+        pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_transformed = applyRotation(cloud);
 
+        sensor_msgs::msg::PointCloud2 transformed_output;
+        pcl::toROSMsg(*cloud_transformed, transformed_output);
+        pub_transformed_->publish(transformed_output);
+
+        // CropBox filter
+        pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_cropped = applyCropBoxFilter(cloud_transformed);
 
         // VoxelGrid downsampling
         pcl::VoxelGrid<pcl::PointXYZI> sor_downsample;
@@ -128,11 +178,14 @@ private:
         pub_->publish(output);
 
         // RCLCPP_INFO(this->get_logger(), "Cloud after filtering: %lu points", cloud_filtered->size());
+
+
     }
 
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr subscription_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_downsampled_;
+    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_transformed_;
 };
 
 int main(int argc, char **argv)
